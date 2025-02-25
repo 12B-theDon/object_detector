@@ -12,7 +12,7 @@ from std_msgs.msg import Bool
 from visualization_msgs.msg import Marker, MarkerArray 
 
 import sys
-sys.path.append('/home/rcv/race_stack/cordinate/src')
+sys.path.append('./cordinate/src')
 from cordinate import cordinate_converter
 
 class ObstacleTracker(Node):
