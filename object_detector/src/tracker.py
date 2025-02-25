@@ -163,33 +163,21 @@ class ObstacleTracker(Node):
         self.marker_pub.publish(markers)
 
     
-    # I JUST MADE THIS!!!!!!!!
     def update(self):
-        # 글로벌 좌표 (obs_x, obs_y)를 Frenet 좌표 (s, d)로 변환
-        try:
-            # coordinate_converter에 global_to_frenet_point 메서드가 있다고 가정
-            s, d = self.converter.global_to_frenet_point(self.obs_x, self.obs_y)
-        except Exception as e:
-            self.get_logger().error(f"좌표 변환 오류: {e}")
+        if self.track_length is None:
             return
 
-        # 측정 속도: obstacle_callback에서 받아온 속도 벡터의 크기 또는 전역 경로 상의 속도 사용
-        measured_speed = np.sqrt(self.obs_vx ** 2 + self.obs_vy ** 2)
-        # 전역 경로를 기반으로 속도를 보정할 수도 있습니다.
-        global_speed = self.find_nearest_global_speed(s, d)
-        # 여기서는 전역 경로의 속도를 측정값으로 사용합니다.
-        measurement = np.array([s, d, global_speed])
+        # 측정값 x,y,vx,vy -> s,d,v
+        s_meas, d_meas = self.converter.global_to_frenet_point(self.obs_x, self.obs_y)
+        s_meas = self.normalize_s(s_meas, self.track_length)
+        s_meas, d_meas = self.filter_outlier(s_meas, d_meas, threshold_s=1.0, threshold_d=0.5)
 
-        # EKF 업데이트 수행
-        # 측정 함수 Hx: 상태 그대로 출력, 자코비안 HJacobian: 항등 행렬
-        self.ekf.update(
-            z=measurement,
-            HJacobian=lambda x: np.eye(3),
-            Hx=lambda x: x
-        )
+        v_meas = np.hypot(self.obs_vx, self.obs_vy)
 
+        # 측정 벡터 z = [s, d, v]
+        z = np.array([s_meas, d_meas, v_meas])
+        self.ekf.update(z)
         self.is_initialized = True
-        self.get_logger().info(f"EKF 업데이트 완료: 측정값 = {measurement}")
 
 
     
