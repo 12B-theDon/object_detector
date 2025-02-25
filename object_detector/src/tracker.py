@@ -105,6 +105,15 @@ class ObstacleTracker(Node):
             return s
         return s % track_length
 
+    def filter_outlier(self, s_meas, d_meas, threshold_s=1.0, threshold_d=0.5):
+        diff_s = abs(self.normalize_s(s_meas - self.ekf.x[0], self.track_length))
+        diff_d = abs(d_meas - self.ekf.x[1])
+        if diff_s > threshold_s:
+            s_meas = self.ekf.x[0]
+        if diff_d > threshold_d:
+            d_meas = self.ekf.x[1]
+        return s_meas, d_meas
+
     def find_nearest_global_speed(self, s_obs, d_obs):
         if len(self.globalpath_s) == 0 or len(self.globalpath_v) == 0:
             self.get_logger().warn("Global path is not available for speed lookup.")
