@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.5)
-project(object_detection)
+project(object_detector)
 
 # C++ 표준 (필요시 14 이상으로 설정)
 if(NOT CMAKE_CXX_STANDARD)
@@ -16,6 +16,7 @@ find_package(visualization_msgs REQUIRED)
 find_package(tf2)
 find_package(tf2_ros REQUIRED)
 find_package(tf2_geometry_msgs REQUIRED)
+find_package(rclpy REQUIRED) 
 
 # scan_processor_node: 레이저 스캔 전처리 및 장애물 후보 생성
 add_executable(scan_processor_node src/scan_processor_node.cpp)
@@ -55,17 +56,17 @@ ament_target_dependencies(delay_monitor_node
   geometry_msgs
 )
 
+install(PROGRAMS
+  src/tracker.py  # Python 스크립트 경로
+  DESTINATION lib/${PROJECT_NAME}  # ROS 2 실행 파일들이 위치하는 기본 경로
+)
+
 # 설치 대상 설정
 install(TARGETS
   scan_processor_node
   obstacle_detector_node
   visualization_node
   delay_monitor_node
-  DESTINATION lib/${PROJECT_NAME}
-)
-
-install(PROGRAMS
-  src/tracker.py
   DESTINATION lib/${PROJECT_NAME}
 )
 
