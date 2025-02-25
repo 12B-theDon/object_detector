@@ -33,8 +33,8 @@ class ObstacleTracker(Node):
                                [0, 1,    0  ],
                                [0, 0,    1  ]])
 
-        q_s = Q_discrete_white_noise(dim=1, dt=self.dt, var=0.1)  # for s
-        q_v = Q_discrete_white_noise(dim=1, dt=self.dt, var=0.1)  # for v
+        q_s = Q_discrete_white_noise(dim=2, dt=self.dt, var=0.1)  # for s
+        q_v = Q_discrete_white_noise(dim=2, dt=self.dt, var=0.1)  # for v
         q_d = np.array([[0.01]])                                # for d
 
         # 상태 순서를 [s, d, v]
