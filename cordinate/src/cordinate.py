@@ -65,11 +65,13 @@ class cordinate_converter:
             d = out1[1]
         return [s, d]
     
-    def global_to_frenet(self, path_list:list):
-        output = []
-        for i in range (0, len(path_list)):
-            output.append([self.global_to_frenet_point(path_list[i][0], path_list[i][1])+ [path_list[i][2]]])
-        return output
+    def global_to_frenet(self, path_list):
+    output = []
+    for i in range(len(path_list)):
+        s_d = self.global_to_frenet_point(path_list[i][0], path_list[i][1])  # Returns (s, d)
+        v = path_list[i][2]  # Extract velocity
+        output.append([s_d[0], s_d[1], v])  # Correctly format as [s, d, v]
+    return output
     
     def frenet_to_global_point(self, s, d):
         if(s<0):
