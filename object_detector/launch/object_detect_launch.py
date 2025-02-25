@@ -42,8 +42,8 @@ def generate_launch_description():
         ),
         Node(
             package='object_detection',
-            executable='obstacle_tracker',
-            name='obstacle_tracker',
+            executable='tracker.py',
+            name='obstacle_tracker_node',
             output='screen',
             parameters=[config_path]
         )
