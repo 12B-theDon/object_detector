@@ -17,7 +17,7 @@ from cordinate import cordinate_converter
 
 class ObstacleTracker(Node):
     def __init__(self):
-        super().__init__('obstacle_tracker')
+        super().__init__('tracker_node')
         self.converter = cordinate_converter(self)
         self.get_logger().info("Obstacle Tracker Initialized")
 
