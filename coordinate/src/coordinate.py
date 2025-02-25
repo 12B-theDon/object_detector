@@ -6,7 +6,7 @@ import rclpy
 from rclpy.node import Node
 from rclpy.qos import QoSProfile, ReliabilityPolicy, DurabilityPolicy, HistoryPolicy
 
-class cordinate_converter:
+class coordinate_converter:
     def __init__(self, node: Node):
         self.node = node
         self.path_recived = False
@@ -178,8 +178,8 @@ class cordinate_converter:
 
 def main():
     rclpy.init()
-    node = Node("cordinate_converter_test_node")
-    converter = cordinate_converter(node)
+    node = Node("coordinate_converter_test_node")
+    converter = coordinate_converter(node)
     rclpy.spin(node)
     node.destroy_node()
     rclpy.shutdown()

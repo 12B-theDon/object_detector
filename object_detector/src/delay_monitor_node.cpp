@@ -54,11 +54,11 @@ private:
       max_delay = std::max(max_delay, delay);
       if (enable_log) {
         double avg_delay = sum_delay / count;
-        RCLCPP_INFO(this->get_logger(), "%s: delay = %f sec, max = %f sec, avg = %f sec",
-                    label.c_str(), delay, max_delay, avg_delay);
+        //RCLCPP_INFO(this->get_logger(), "%s: delay = %f sec, max = %f sec, avg = %f sec",
+        //            label.c_str(), delay, max_delay, avg_delay);
       }
     } else if (enable_log) {
-      RCLCPP_WARN(this->get_logger(), "%s: delay (%f sec) >= 1 sec. Skipping measurement.", label.c_str(), delay);
+      //RCLCPP_WARN(this->get_logger(), "%s: delay (%f sec) >= 1 sec. Skipping measurement.", label.c_str(), delay);
     }
   }
 
@@ -82,7 +82,7 @@ private:
     }
   }
 
-  // /imu/data 메시지 처리: /odom과 비교 
+  // /imu/data 메시지 처리: /odom과 비교 (로그 출력은 원래 주석된 부분 유지)
   void imuCallback(const sensor_msgs::msg::Imu::SharedPtr msg)
   {
     rclcpp::Time imu_time = msg->header.stamp;
@@ -104,6 +104,7 @@ private:
     latest_opponent_odom_time_ = msg->header.stamp;
   }
 
+  // 구독자 변수
   rclcpp::Subscription<sensor_msgs::msg::LaserScan>::SharedPtr scan_sub_;
   rclcpp::Subscription<sensor_msgs::msg::Imu>::SharedPtr imu_sub_;
   rclcpp::Subscription<nav_msgs::msg::Odometry>::SharedPtr odom_sub_;
@@ -114,17 +115,17 @@ private:
   rclcpp::Time latest_opponent_odom_time_;
   rclcpp::Time latest_imu_time_;
 
-  // /scan vs /odom 변수
+  // /scan vs /odom 통계 변수
   double max_delay_scan_odom_;
   double sum_delay_scan_odom_;
   int count_scan_odom_;
 
-  // /scan vs /opponent_odom 변수
+  // /scan vs /opponent_odom 통계 변수
   double max_delay_scan_opponent_;
   double sum_delay_scan_opponent_;
   int count_scan_opponent_;
 
-  // /imu/data vs /odom 변수
+  // /imu/data vs /odom 통계 변수
   double max_delay_imu_odom_;
   double sum_delay_imu_odom_;
   int count_imu_odom_;

@@ -1,10 +1,10 @@
 <?xml version="1.0"?>
 <?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="3">
-  <name>cordinate</name>
+  <name>coordinate</name>
   <version>1.1.0</version>
   <description>
-    convert cordinates between frenet and global
+    convert coordinates between frenet and global
   </description>
   <maintainer email="joebetz@seas.upenn.edu">JaeseoShin</maintainer>
   <license>BSD</license>

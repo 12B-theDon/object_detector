@@ -12,11 +12,11 @@
 //#include <ament_index_cpp/get_package_share_directory.hpp>
 //#include "geometry_msgs/msg/pose.hpp"
 
-class CordinateConverter {
+class CoordinateConverter {
 public:
-  CordinateConverter(rclcpp::Node::SharedPtr node, bool node_mode,
+  CoordinateConverter(rclcpp::Node::SharedPtr node, bool node_mode,
                      std::string config_file_path, const std::string path_type);
-  ~CordinateConverter();
+  ~CoordinateConverter();
 
   std::vector<std::vector<double>> getGlobalPath();
 

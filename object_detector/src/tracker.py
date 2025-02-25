@@ -12,14 +12,19 @@ from std_msgs.msg import Bool
 from visualization_msgs.msg import Marker, MarkerArray 
 
 import sys
-sys.path.append('/home/damvi2/object_detection/cordinate/src')
-from cordinate import cordinate_converter
+sys.path.append('/detect_ws/src/coordinate/src')
+from coordinate import coordinate_converter
 
 class ObstacleTracker(Node):
     def __init__(self):
         super().__init__('tracker_node')
-        self.converter = cordinate_converter(self)
+        self.converter = coordinate_converter(self)
         self.get_logger().info("Obstacle Tracker Initialized")
+
+        # I JUST MADE THIS !!!!!!!!!!!!!!!!!!!
+        # 기본값 초기화
+        self.global_x = 0.0
+        self.global_y = 0.0
 
         self.globalpath_s = np.array([])
         self.globalpath_d = np.array([])
@@ -47,7 +52,7 @@ class ObstacleTracker(Node):
 
         self.obs_x = self.obs_y = self.obs_vx = self.obs_vy = 0.0
 
-        self.create_subscription(Bool, "/obstacle", self.obstacle_detected_callback, 10)
+        self.create_subscription(Bool, "/obstacle_detected", self.obstacle_detected_callback, 10)
         self.create_subscription(Odometry, "/opponent_odom", self.obstacle_callback, 10)
 
         self.predicted_obstacle_pub = self.create_publisher(Odometry, "/predicted_obstacle", 10)
@@ -157,6 +162,37 @@ class ObstacleTracker(Node):
 
         self.marker_pub.publish(markers)
 
+    
+    # I JUST MADE THIS!!!!!!!!
+    def update(self):
+        # 글로벌 좌표 (obs_x, obs_y)를 Frenet 좌표 (s, d)로 변환
+        try:
+            # coordinate_converter에 global_to_frenet_point 메서드가 있다고 가정
+            s, d = self.converter.global_to_frenet_point(self.obs_x, self.obs_y)
+        except Exception as e:
+            self.get_logger().error(f"좌표 변환 오류: {e}")
+            return
+
+        # 측정 속도: obstacle_callback에서 받아온 속도 벡터의 크기 또는 전역 경로 상의 속도 사용
+        measured_speed = np.sqrt(self.obs_vx ** 2 + self.obs_vy ** 2)
+        # 전역 경로를 기반으로 속도를 보정할 수도 있습니다.
+        global_speed = self.find_nearest_global_speed(s, d)
+        # 여기서는 전역 경로의 속도를 측정값으로 사용합니다.
+        measurement = np.array([s, d, global_speed])
+
+        # EKF 업데이트 수행
+        # 측정 함수 Hx: 상태 그대로 출력, 자코비안 HJacobian: 항등 행렬
+        self.ekf.update(
+            z=measurement,
+            HJacobian=lambda x: np.eye(3),
+            Hx=lambda x: x
+        )
+
+        self.is_initialized = True
+        self.get_logger().info(f"EKF 업데이트 완료: 측정값 = {measurement}")
+
+
+    
     def run(self):
         if self.track_length is None:
             self.global_path()
@@ -172,6 +208,8 @@ class ObstacleTracker(Node):
         self.ekf.x[0] = self.normalize_s(self.ekf.x[0], self.track_length)
         self.publish_predicted_obstacle()
         self.publish_markers()
+
+    
 
 def main():
     rclpy.init()

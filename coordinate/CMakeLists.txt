@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.8)
-project(cordinate)
+project(coordinate)
 
 if(NOT CMAKE_CXX_STANDARD)
   set(CMAKE_CXX_STANDARD 14)
@@ -39,14 +39,14 @@ include_directories(
   "${PROJECT_SOURCE_DIR}/src"
 )
 
-add_executable(cordinate_converter src/cordinate.cpp)
+add_executable(coordinate_converter src/coordinate.cpp)
 
-ament_target_dependencies(cordinate_converter rclcpp std_msgs nav_msgs geometry_msgs)
+ament_target_dependencies(coordinate_converter rclcpp std_msgs nav_msgs geometry_msgs)
 
 #target_link_libraries(rf_publisher_node ${LIBSERIAL_LIB})
 
 install(TARGETS
-  cordinate_converter
+  coordinate_converter
   DESTINATION lib/${PROJECT_NAME}
 )
 install(DIRECTORY config/

@@ -1,4 +1,4 @@
-#include "cordinate.hpp"
+#include "coordinate.hpp"
 #include "geometry_msgs/msg/pose_stamped.hpp"
 #include "nav_msgs/msg/path.hpp"
 #include "rclcpp/rclcpp.hpp"
@@ -9,7 +9,7 @@
 #include <string>
 #include <vector>
 
-CordinateConverter::CordinateConverter(rclcpp::Node::SharedPtr node,
+CoordinateConverter::CoordinateConverter(rclcpp::Node::SharedPtr node,
                                        bool node_mode = false,
                                        std::string config_file_path = "",
                                        const std::string path_type = "ring") {
@@ -19,7 +19,7 @@ CordinateConverter::CordinateConverter(rclcpp::Node::SharedPtr node,
   if (node_mode_) {
     if (config_file_path == "") {
       config_file_path =
-          ament_index_cpp::get_package_share_directory("cordinate") +
+          ament_index_cpp::get_package_share_directory("coordinate") +
           "/config/config.yaml";
     }
     std::string path_file_path, pgm_file_path, map_yaml_file_path;
@@ -72,13 +72,13 @@ CordinateConverter::CordinateConverter(rclcpp::Node::SharedPtr node,
   }
 }
 
-CordinateConverter::~CordinateConverter() {
+CoordinateConverter::~CoordinateConverter() {
   if (node_mode_) {
     delete map_node_;
   }
 }
 
-void CordinateConverter::readPath(std::string path_file_path) {
+void CoordinateConverter::readPath(std::string path_file_path) {
   std::ifstream path_file(path_file_path);
   std::string line_temp;
   while (getline(path_file, line_temp)) {
@@ -102,7 +102,7 @@ void CordinateConverter::readPath(std::string path_file_path) {
   }
 }
 
-void CordinateConverter::readPath(nav_msgs::msg::Path path_topic) {
+void CoordinateConverter::readPath(nav_msgs::msg::Path path_topic) {
   for (int i = 0; i < path_topic.poses.size(); i++) {
     std::vector<double> temp;
     temp.push_back(path_topic.poses[i].pose.position.x);
@@ -117,7 +117,7 @@ void CordinateConverter::readPath(nav_msgs::msg::Path path_topic) {
   }
 }
 
-double CordinateConverter::calcPathToPathHeading(int idx) {
+double CoordinateConverter::calcPathToPathHeading(int idx) {
   idx = idx % global_path_.size();
   int next_idx = (idx + 1) % global_path_.size();
 
@@ -129,7 +129,7 @@ double CordinateConverter::calcPathToPathHeading(int idx) {
   return theta;
 }
 
-double CordinateConverter::calcPathToPathDistance(int idx) {
+double CoordinateConverter::calcPathToPathDistance(int idx) {
 
   idx = idx % global_path_.size();
   int next_idx = (idx + 1) % global_path_.size();
@@ -140,7 +140,7 @@ double CordinateConverter::calcPathToPathDistance(int idx) {
   return calcDistance(cur_x, cur_y, next_x, next_y);
 }
 
-double CordinateConverter::calcPathToPathRechingTime(int idx) {
+double CoordinateConverter::calcPathToPathRechingTime(int idx) {
   idx = idx % global_path_.size();
   int prev_idx = ((idx - 1) + global_path_.size()) % global_path_.size();
   double speed = global_path_[idx][2], prev_speed = global_path_[prev_idx][2];
@@ -148,7 +148,7 @@ double CordinateConverter::calcPathToPathRechingTime(int idx) {
   return calcPathToPathDistance(prev_idx) / avg_speed;
 }
 
-int CordinateConverter::getClosestsIndex(double x, double y) {
+int CoordinateConverter::getClosestsIndex(double x, double y) {
   double closest_dist = INFINITY;
   int idx;
   for (int i = 0; i < global_path_.size(); i++) {
@@ -161,7 +161,7 @@ int CordinateConverter::getClosestsIndex(double x, double y) {
   return idx;
 }
 
-std::vector<double> CordinateConverter::globalToFrenet(double x, double y) {
+std::vector<double> CoordinateConverter::globalToFrenet(double x, double y) {
   int closest_idx = getClosestsIndex(x, y);
   std::pair<double, double> out1 = calcDS(closest_idx, closest_idx + 1, x, y);
   std::pair<double, double> out2 = calcDS(closest_idx - 1, closest_idx, x, y);
@@ -181,7 +181,7 @@ std::vector<double> CordinateConverter::globalToFrenet(double x, double y) {
   return output;
 }
 
-double CordinateConverter::calcPathDistance(int idx_start, int idx_end) {
+double CoordinateConverter::calcPathDistance(int idx_start, int idx_end) {
   double distance_counter = 0;
   if (idx_end < idx_start) {
     idx_end += global_path_.size();
@@ -192,22 +192,22 @@ double CordinateConverter::calcPathDistance(int idx_start, int idx_end) {
   return distance_counter;
 }
 
-double CordinateConverter::calcDistance(double x, double y, double x1,
+double CoordinateConverter::calcDistance(double x, double y, double x1,
                                         double y1) {
   return sqrt(pow(x - x1, 2) + pow(y - y1, 2));
 }
 
-double CordinateConverter::getpathLenth() {
+double CoordinateConverter::getpathLenth() {
   return calcPathDistance(0, global_path_.size() - 1);
 }
 
-void CordinateConverter::path_publisher() {
+void CoordinateConverter::path_publisher() {
   publisher_->publish(*global_path_msg_);
   RCLCPP_INFO(node_->get_logger(), "Published Path with %zu points",
               global_path_msg_->poses.size());
 }
 
-void CordinateConverter::path_msg_generator() {
+void CoordinateConverter::path_msg_generator() {
   global_path_msg_ = std::make_shared<nav_msgs::msg::Path>();
   global_path_msg_->header.stamp = node_->get_clock()->now();
   global_path_msg_->header.frame_id = "map";
@@ -226,15 +226,15 @@ void CordinateConverter::path_msg_generator() {
   global_path_msg_;
 }
 
-void CordinateConverter::pathCallback(nav_msgs::msg::Path msg) {
+void CoordinateConverter::pathCallback(nav_msgs::msg::Path msg) {
   global_path_msg_ = std::make_shared<nav_msgs::msg::Path>(msg);
 }
 
-std::vector<std::vector<double>> CordinateConverter::getGlobalPath() {
+std::vector<std::vector<double>> CoordinateConverter::getGlobalPath() {
   return global_path_;
 }
 
-std::pair<double, double> CordinateConverter::calcDS(int idx, int next_idx,
+std::pair<double, double> CoordinateConverter::calcDS(int idx, int next_idx,
                                                      double x, double y) {
   // 인덱스가 음수가 될 경우를 고려하여 올바르게 보정합니다.
   int n = global_path_.size();
@@ -277,7 +277,7 @@ std::pair<double, double> CordinateConverter::calcDS(int idx, int next_idx,
   return std::make_pair(d, s);
 }
 
-std::vector<double> CordinateConverter::FrenetToGlobal(double s, double d) {
+std::vector<double> CoordinateConverter::FrenetToGlobal(double s, double d) {
   if (s < 0)
     s += getpathLenth();
   s = std::fmod(s, getpathLenth());
@@ -303,7 +303,7 @@ std::vector<double> CordinateConverter::FrenetToGlobal(double s, double d) {
 }
 
 std::vector<double>
-CordinateConverter::toNormal2DVector(std::vector<double> vector) {
+CoordinateConverter::toNormal2DVector(std::vector<double> vector) {
   std::vector<double> output = {vector[1], vector[0] * -1};
   return output;
 }
@@ -317,7 +317,7 @@ std::vector<double> vectorSubtract(std::vector<double> vectorA,
   return output;
 }
 
-std::vector<double> CordinateConverter::vectorAdd(std::vector<double> vectorA,
+std::vector<double> CoordinateConverter::vectorAdd(std::vector<double> vectorA,
                                                   std::vector<double> vectorB) {
   std::vector<double> output;
   for (int i = 0; i < std::min(vectorA.size(), vectorB.size()); i++) {
@@ -327,7 +327,7 @@ std::vector<double> CordinateConverter::vectorAdd(std::vector<double> vectorA,
 }
 
 std::vector<double>
-CordinateConverter::vectorScalarMultiple(std::vector<double> vector, double a) {
+CoordinateConverter::vectorScalarMultiple(std::vector<double> vector, double a) {
   for (int i = 0; i < vector.size(); i++) {
     vector[i] *= a;
   }
@@ -335,7 +335,7 @@ CordinateConverter::vectorScalarMultiple(std::vector<double> vector, double a) {
 }
 
 std::vector<double>
-CordinateConverter::vectorScalarDivision(std::vector<double> vector, double a) {
+CoordinateConverter::vectorScalarDivision(std::vector<double> vector, double a) {
   std::vector<double> output;
   for (int i = 0; i < vector.size(); i++) {
     output.push_back(vector[i] / a);
@@ -344,13 +344,13 @@ CordinateConverter::vectorScalarDivision(std::vector<double> vector, double a) {
 }
 
 std::vector<double>
-CordinateConverter::pointToVector(std::vector<double> start_point,
+CoordinateConverter::pointToVector(std::vector<double> start_point,
                                   std::vector<double> end_point) {
 
   return vectorSubtract(end_point, start_point);
 }
 
-std::vector<double> CordinateConverter::calcProjv(std::vector<double> vectorA,
+std::vector<double> CoordinateConverter::calcProjv(std::vector<double> vectorA,
                                                   std::vector<double> vectorB) {
   double projT = dotProudct(vectorA, vectorB) / dotProudct(vectorB, vectorB);
   vectorB[0] *= projT;
@@ -358,19 +358,19 @@ std::vector<double> CordinateConverter::calcProjv(std::vector<double> vectorA,
   return vectorB;
 }
 
-double CordinateConverter::dotProudct(std::vector<double> vectorA,
+double CoordinateConverter::dotProudct(std::vector<double> vectorA,
                                       std::vector<double> vectorB) {
   double dot = (vectorA[0] * vectorB[0]) + (vectorA[1] * vectorB[1]);
   return dot;
 }
 
-double CordinateConverter::crossProduct(std::vector<double> vectorA,
+double CoordinateConverter::crossProduct(std::vector<double> vectorA,
                                         std::vector<double> vectorB) {
   double cross = vectorA[0] * vectorB[1] - vectorA[1] * vectorB[0];
   return cross;
 }
 
-int CordinateConverter::getStartPathFromFrenet(double s, double d) {
+int CoordinateConverter::getStartPathFromFrenet(double s, double d) {
   int idx_counter = 0;
   if (s > getpathLenth())
     s = std::fmod(s, (getpathLenth()));
@@ -384,8 +384,8 @@ int CordinateConverter::getStartPathFromFrenet(double s, double d) {
 
 int main(int argc, char *argv[]) {
   rclcpp::init(argc, argv);
-  auto node = rclcpp::Node::make_shared("cordinate_converter");
-  CordinateConverter c(node, true);
+  auto node = rclcpp::Node::make_shared("coordinate_converter");
+  CoordinateConverter c(node, true);
   std::vector<double> a = c.globalToFrenet(0.1134318, 5.2239407);
   std::vector<double> b = c.FrenetToGlobal(a[0], a[1]);
   RCLCPP_INFO(node->get_logger(), "entire path lenth: %.3f", c.getpathLenth());

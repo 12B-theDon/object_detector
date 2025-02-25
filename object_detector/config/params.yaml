@@ -3,8 +3,8 @@ scan_processor_node:
     # 스캔 데이터 필터링 파라미터
     scan_range_min: 0.0            # (m) 레이저 스캔 데이터에서 고려할 최소 거리
     scan_range_max: 8.0            # (m) 레이저 스캔 데이터에서 고려할 최대 거리
-    scan_angle_min: -1.5708        # (rad) 스캔 데이터에서 고려할 최소 각도 (-π/2 ≒ -1.5708 rad)
-    scan_angle_max: 1.5708         # (rad) 스캔 데이터에서 고려할 최대 각도 (π/2 ≒ 1.5708 rad)
+    scan_angle_min: -2.35619       # (rad) 스캔 데이터에서 고려할 최소 각도 (-π/2 ≒ -1.5708 rad)
+    scan_angle_max: 2.35619         # (rad) 스캔 데이터에서 고려할 최대 각도 (π/2 ≒ 1.5708 rad)
 
     # DBSCAN 클러스터링 관련 파라미터
     min_cluster_points: 8          # (개) DBSCAN 클러스터링 시 하나의 클러스터로 인식하기 위한 최소 점 개수
