@@ -7,9 +7,9 @@ scan_processor_node:
     scan_angle_max: 2.35619         # (rad) 스캔 데이터에서 고려할 최대 각도 (π/2 ≒ 1.5708 rad)
 
     # DBSCAN 클러스터링 관련 파라미터
-    min_cluster_points: 5          # (개) DBSCAN 클러스터링 시 하나의 클러스터로 인식하기 위한 최소 점 개수
-    dbscan_epsilon: 0.05           # (m) 두 점 사이의 최대 거리 기준 (eps 값)
-    dbscan_max_points: 55          # (개) DBSCAN 클러스터링 시 하나의 클러스터로 인식하기 위한 최대 점 개수
+    min_cluster_points: 3          # (개) DBSCAN 클러스터링 시 하나의 클러스터로 인식하기 위한 최소 점 개수
+    dbscan_epsilon: 0.03           # (m) 두 점 사이의 최대 거리 기준 (eps 값)
+    dbscan_max_points: 100          # (개) DBSCAN 클러스터링 시 하나의 클러스터로 인식하기 위한 최대 점 개수
 
     # 벽 필터링 관련 파라미터
     wall_distance_threshold: 0.12  # (m) 연속된 스캔 점 사이의 최대 거리 – 이 값 이하이면 같은 그룹으로 묶음
@@ -24,11 +24,11 @@ scan_processor_node:
     
 obstacle_detector_node:
   ros__parameters:
-    dbscan_eps: 0.3                # (m) DBSCAN 함수에서 두 점이 서로 인접하다고 판단하는 최대 거리(증가시 클러스터 크기가 더 커짐)
+    dbscan_eps: 0.25                # (m) DBSCAN 함수에서 두 점이 서로 인접하다고 판단하는 최대 거리(증가시 클러스터 크기가 더 커짐)
     dbscan_min_points: 3           # (개수) DBSCAN에서 하나의 코어로 간주되기 위해 해당 반경 내에 있어야 하는 점 최소 개수 
     use_weighted_median: true      # () weighted median값을 사용해서 클러스터 내의 대표점을 산출할 지 결정하는 파라미터
-    kalman_process_noise: 0.4      # (m²/s²)칼말 필터의 예측 단계에서 시스템의 불확실성(증가시 필터가 측정치에 민감하게 반응, noise에 민감해져서 요동침)
-    kalman_measurement_noise: 0.6  # (m², m²/s²) 칼만 필터의 업데이트 단계에서 측정치의 노이즈(불확실성)를 나타내는 값
+    kalman_process_noise: 0.2      # (m²/s²)칼말 필터의 예측 단계에서 시스템의 불확실성(증가시 필터가 측정치에 민감하게 반응, noise에 민감해져서 요동침)
+    kalman_measurement_noise: 0.05  # (m², m²/s²) 칼만 필터의 업데이트 단계에서 측정치의 노이즈(불확실성)를 나타내는 값
     use_kalman_filter: true        # () kalman filter 적용 여부
     obstacle_timeout: 1.0          # (초) 이 시간동안 측정값이 없으면 장애물 없음으로 간주
     
