@@ -56,12 +56,6 @@ ament_target_dependencies(delay_monitor_node
   geometry_msgs
 )
 
-# tracker.py node
-install(PROGRAMS
-  src/tracker.py  # Python 스크립트 경로
-  DESTINATION lib/${PROJECT_NAME}  # ROS 2 실행 파일들이 위치하는 기본 경로
-)
-
 # 설치 대상 설정
 install(TARGETS
   scan_processor_node

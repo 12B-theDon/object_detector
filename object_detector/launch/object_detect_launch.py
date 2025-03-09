@@ -39,12 +39,5 @@ def generate_launch_description():
             name='delay_monitor_node',
             output='screen',
             parameters=[config_path]
-        ),
-        Node(
-            package='object_detector',
-            executable='tracker.py',
-            name='tracker_node',
-            output='screen',
-            parameters=[config_path]
         )
     ])
