@@ -1,7 +1,7 @@
 # object_detection
 object detection for detecting wall and dynamic&amp;static obstacles
 
-All rights for detector code belongS to minhyeong3463@inha.edu, thereby any modification/misappropriation towards this code is STRICTLY FORBIDDEN. 
+All rights for detector code belongs to minhyeong3463@inha.edu, thereby any modification/misappropriation towards this code is STRICTLY FORBIDDEN. 
 
 
 ## TODO
